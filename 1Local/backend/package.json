@@ -1,0 +1,17 @@
+{
+  "name": "hello-world-app",
+  "version": "1.0.0",
+  "description": "A Node.js app that displays the number of apples in MongoDB",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^5.7.0",
+    "mongoose": "^7.0.0",
+    "body-parser": "^1.20.2"
+  },
+  "author": "admin",
+  "license": "MIT"
+}
