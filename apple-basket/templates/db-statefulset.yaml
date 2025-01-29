@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  labels:
+    {{- include "apple-basket.mongodb.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ .Values.mongodb.service.name }}
+  replicas: {{ .Values.mongodb.replicaCount }}
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: "{{ .Values.mongodb.image }}"
+        resources:
+          requests:
+            memory: {{ .Values.mongodb.resources.requests.memory }}
+            cpu: {{ .Values.mongodb.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.mongodb.resources.limits.memory }}
+            cpu: {{ .Values.mongodb.resources.limits.cpu }}
+        ports:
+        - containerPort: {{ .Values.mongodb.service.port }}
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: mongodb-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.mongodb.storage.size }}
+      storageClassName: {{ .Values.mongodb.storage.class }}

@@ -1,3 +1,6 @@
+resource "kubectl_manifest" "apple_basket_app" {
+  depends_on = [ helm_release.argocd ]
+  yaml_body = <<YAML
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -19,3 +22,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+YAML
+}

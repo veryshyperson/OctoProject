@@ -60,3 +60,19 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "apple-basket.fullname" -}}
+{{ .Release.Name }}
+{{- end }}
+
+{{- define "apple-basket.labels" -}}
+app: {{ include "apple-basket.fullname" . }}
+{{- end }}
+
+{{- define "apple-basket.mongodb.fullname" -}}
+{{ .Release.Name }}-mongodb
+{{- end }}
+
+{{- define "apple-basket.mongodb.labels" -}}
+app: {{ include "apple-basket.mongodb.fullname" . }}
+{{- end }}

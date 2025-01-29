@@ -1,0 +1,37 @@
+replicaCount: 1
+
+image:
+  repository: ransperber/octoapp
+  tag: latest
+  pullPolicy: Always
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "250m"
+  limits:
+    memory: "128Mi"
+    cpu: "500m"
+
+mongodb:
+  image: mongo:6.0
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "250m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+  storage:
+    size: 1Gi
+    class: standard
+
+service:
+  mongodb:
+    port: 27017
+
+config:
+  mongodb:
+    service: mongodb-service
+    port: "27017"
+    database: inventory
