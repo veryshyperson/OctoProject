@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apple-basket-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/veryshyperson/OctoProject
+    targetRevision: main
+    path: 2Minikube/apple-basket
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
