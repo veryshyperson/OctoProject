@@ -2,9 +2,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongodb
+  labels:
+    {{- include "apple-basket.mongodb.labels" . | nindent 4 }}
 spec:
-  serviceName: mongodb-service
-  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ .Values.mongodb.service.name }}
+  replicas: {{ .Values.mongodb.replicaCount }}
   selector:
     matchLabels:
       app: mongodb
@@ -24,7 +26,7 @@ spec:
             memory: {{ .Values.mongodb.resources.limits.memory }}
             cpu: {{ .Values.mongodb.resources.limits.cpu }}
         ports:
-        - containerPort: 27017
+        - containerPort: {{ .Values.mongodb.service.port }}
         volumeMounts:
         - name: mongodb-data
           mountPath: /data/db

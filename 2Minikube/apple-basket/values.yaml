@@ -24,7 +24,7 @@ mongodb:
       cpu: "500m"
   storage:
     size: 1Gi
-    class: gp2
+    class: standard
 
 service:
   mongodb:
