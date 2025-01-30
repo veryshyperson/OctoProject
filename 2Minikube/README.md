@@ -37,14 +37,27 @@ makes a volume in the minkube container as practice - when pod fails data saves 
 
 ## Make it happen!<br>
 
-### Considering you have Docker.
-In order to run the minikube run ``` ./start.sh__ ``` in 2Minikube directory. <br>
+### Considering you have Docker:
+In order to run the minikube run ``` ./start.sh``` in 2Minikube directory. <br>
 it also sets you up with argocd.
 <br><br>
 ``` kubectl create -f application.yaml ``` to release __apple-basket__ into the cluster.<br>
 <br>
-``` kubectl port-forward pods/nodejs-app-6db6c659b9-2dgbp 3000:3000 & kubectl port-forward -n argocd svc/argocd-server 8080:443 ```<br>
+ 
+``` kubectl port-forward -n argocd svc/argocd-server 8080:443 ``` 
+
 <br>
+
+``` kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo ```
+<br>
+first password for ArgoCD
+
+<br>
+``` kubectl port-forward ${NODEJS_POD} 3000:3000 ```
+<br>
+
+
 ``` localhost:8080``` __for ArgoCD__
 <br><br>
+
 ``` localhost:3000``` for __apple-basket__ UI

@@ -55,7 +55,7 @@ resource "helm_release" "nginx-controller" {
 }
 
 resource "kubernetes_ingress_v1" "nginx_alb" {
-  depends_on = [ helm_release.nginx-controller, module.eks_blueprints_addons.aws_load_balancer_controller, module.eks_blueprints_addons.aws_ebs_csi_driver ]
+  depends_on = [ helm_release.nginx-controller, module.eks_blueprints_addons.aws_load_balancer_controller, module.eks_blueprints_addons.aws_ebs_csi_driver, null_resource.wait_for_alb_controller ]
   metadata {
     name      = "nginx-ingress"
     namespace = "ingress"
@@ -139,4 +139,17 @@ set {
 
   timeout = 900
   wait    = true
+}
+
+resource "null_resource" "wait_for_alb_controller" {
+  depends_on = [module.eks_blueprints_addons.aws_load_balancer_controller]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      kubectl wait --namespace kube-system \
+        --for=condition=ready pod \
+        --selector app.kubernetes.io/name=aws-load-balancer-controller \
+        --timeout=300s
+    EOT
+  }
 }

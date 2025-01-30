@@ -1,0 +1,81 @@
+name: GitHub Actions for OctoProject
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get the shortened commit SHA
+        id: git-info
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Check for changes in app/ directory
+        id: check-changes
+        run: |
+          git fetch --prune --unshallow  # Ensure full history is available
+          if git diff --name-only HEAD~1 HEAD | grep -q '^app/'; then
+            echo "changes=true" >> $GITHUB_ENV
+          else
+            echo "changes=false" >> $GITHUB_ENV
+          fi
+
+      - name: Set up Docker Buildx
+        if: env.changes == 'true'
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        if: env.changes == 'true'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push multi-arch Docker image
+        if: env.changes == 'true'
+        run: |
+          docker buildx create --use
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            -t ransperber/octoapp2:${{ env.sha }} \
+            -t ransperber/octoapp2:latest \
+            --push app/
+
+      - name: Clone GitOps Repository
+        if: env.changes == 'true'
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/veryshyperson/OctoProject-GitOps.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Update Values File
+        if: env.changes == 'true'
+        run: |
+          cd OctoProject-GitOps/environments/main/
+          values_file="values.yaml"
+
+          if [[ ! -f "$values_file" ]]; then
+            echo "❌ values.yaml not found. Exiting."
+            exit 1
+          fi
+
+          sed -i "s|repository:.*ransperber/octoapp2:.*|repository: ransperber/octoapp2:${{ env.sha }}|g" $values_file
+          echo "Updated values.yaml with new image tag."
+
+      - name: Commit and Push Changes
+        if: env.changes == 'true'
+        run: |
+          cd OctoProject-GitOps
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Update image tag to ${{ env.sha }}"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
