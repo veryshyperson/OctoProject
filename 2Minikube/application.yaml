@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/veryshyperson/OctoProject
     targetRevision: main
-    path: apple-basket
+    path: 2Minikube/apple-basket
     helm:
       valueFiles:
         - values.yaml

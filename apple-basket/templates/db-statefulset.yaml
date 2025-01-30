@@ -37,3 +37,4 @@ spec:
         requests:
           storage: {{ .Values.mongodb.storage.size }}
       storageClassName: {{ .Values.mongodb.storage.class }}
+      volumeMode: {{ .Values.mongodb.storage.mode }}

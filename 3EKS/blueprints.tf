@@ -36,7 +36,7 @@ module "eks_blueprints_addons" {
   }
 }
 
-#aws eks --region us-east-1  update-kubeconfig --name virgin-eks --role-arn arn:aws:iam::058264364931:role/_LocalAdmin
+#aws eks --region us-east-1  update-kubeconfig --name octopus --role-arn arn:aws:iam::058264364931:role/_LocalAdmin
 
 
 resource "helm_release" "nginx-controller" {
@@ -55,7 +55,7 @@ resource "helm_release" "nginx-controller" {
 }
 
 resource "kubernetes_ingress_v1" "nginx_alb" {
-  depends_on = [ helm_release.nginx-controller, module.eks_blueprints_addons.aws_load_balancer_controller ]
+  depends_on = [ helm_release.nginx-controller, module.eks_blueprints_addons.aws_load_balancer_controller, module.eks_blueprints_addons.aws_ebs_csi_driver ]
   metadata {
     name      = "nginx-ingress"
     namespace = "ingress"

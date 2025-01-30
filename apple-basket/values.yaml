@@ -25,6 +25,7 @@ mongodb:
   storage:
     size: 1Gi
     class: gp2
+    mode: Filesystem
 
 service:
   mongodb:
@@ -35,3 +36,8 @@ config:
     service: mongodb-service
     port: "27017"
     database: inventory
+
+ingress:
+  appDomain: app.bokertovmatoki.online
+  class: nginx
+  port: 3000

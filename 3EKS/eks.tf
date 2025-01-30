@@ -48,6 +48,7 @@ module "eks" {
 
       iam_role_additional_policies = {
         SecretsManagerReadWrite = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+        EBSCSIDriver           = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
     }
   }
 }

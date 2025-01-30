@@ -4,7 +4,7 @@ metadata:
   name: mongodb
 spec:
   serviceName: mongodb-service
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: mongodb
@@ -15,14 +15,14 @@ spec:
     spec:
       containers:
       - name: mongodb
-        image: "{{ .Values.mongodb.image }}"
+        image: mongo:6.0
         resources:
           requests:
-            memory: {{ .Values.mongodb.resources.requests.memory }}
-            cpu: {{ .Values.mongodb.resources.requests.cpu }}
+            memory: "128Mi"
+            cpu: "250m"
           limits:
-            memory: {{ .Values.mongodb.resources.limits.memory }}
-            cpu: {{ .Values.mongodb.resources.limits.cpu }}
+            memory: "256Mi"
+            cpu: "500m"
         ports:
         - containerPort: 27017
         volumeMounts:
@@ -35,5 +35,6 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: {{ .Values.mongodb.storage.size }}
-      storageClassName: {{ .Values.mongodb.storage.class }}
+          storage: 1Gi
+      storageClassName: gp2  # Use gp2 storage class as defined
+      volumeMode: Filesystem
