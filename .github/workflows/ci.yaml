@@ -57,7 +57,7 @@ jobs:
       - name: Update Values File
         if: env.changes == 'true'
         run: |
-          cd OctoProject-GitOps/environments/main/
+          cd OctoProject-GitOps/
           values_file="values.yaml"
 
           if [[ ! -f "$values_file" ]]; then
@@ -65,8 +65,18 @@ jobs:
             exit 1
           fi
 
-          sed -i "s|repository:.*ransperber/octoapp2:.*|repository: ransperber/octoapp2:${{ env.sha }}|g" $values_file
-          echo "Updated values.yaml with new image tag."
+          echo "🔍 Before update:"
+          cat $values_file | grep "tag:"
+
+          sed -i "s|^\(\s*tag:\s*\).*|\1${{ env.sha }}|g" $values_file
+
+          echo "✅ After update:"
+          cat $values_file | grep "tag:"
+
+          if git diff --quiet; then
+            echo "🚀 No changes detected. Skipping commit."
+            exit 0
+          fi
 
       - name: Commit and Push Changes
         if: env.changes == 'true'
